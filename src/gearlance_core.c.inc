@@ -145,7 +145,7 @@ union opcode *GEARLANCE_CORE_SYMBOL(
 
 	/* state-holding variables */
 
-	static int repStackA[MAXNEST], repStackB[MAXNEST];
+    int repStackA[MAXNEST], repStackB[MAXNEST];
 
 	union opcode *ipA = 0, *ipB = 0;
 	unsigned char *ptrA = 0, *ptrB = 0, bcache = 0;
