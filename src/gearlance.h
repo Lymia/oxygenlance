@@ -46,7 +46,7 @@ union opcode
 	int count;
 };
 
-union opcode *core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB);
+union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB);
 
 extern int scores[2][MAXTAPE+1];
 

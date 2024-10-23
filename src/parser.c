@@ -33,69 +33,38 @@
 #include "rust_callbacks.h"
 #include "parser.h"
 
-char fail_msg[256];
-jmp_buf fail_buf;
+static thread_local const char* err_msg;
+static thread_local jmp_buf fail_buf;
+
+static void fail(const char *err)
+{
+    err_msg = err;
+	longjmp(fail_buf, 1);
+}
 
 /* forced repetition count for empty loops.
    (0 and 1 are sensible values.) */
 #define EMPTY_LOOP_COUNT 0
 
-/* helper functions for buffered reading with ungetch */
+/* helper functions for reading from the input */
 
-#define BUF_SIZE (65536+4096)
-#define READ_SIZE 65536
-
-static unsigned char buf[BUF_SIZE];
-static unsigned buf_at = 0, buf_size = 0;
-
-
-static int nextc(stream_id input)
+static int nextc(struct input_data* input)
 {
-	if (buf_at >= buf_size)
-	{
-#ifdef PARSE_STDIN
-		int fd = 0;
-		size_t read_size = *input < READ_SIZE ? *input : READ_SIZE;
-		if (read_size == 0) return -1;
-#else /* PARSE_STDIN */
-		int fd = input;
-		size_t read_size = READ_SIZE;
-#endif
-
-		ssize_t t = read(fd, buf, read_size);
-		if (t < 0) die("read error");
-		if (t == 0) return -1;
-#ifdef PARSE_STDIN
-		*input -= t;
-#endif
-
-		buf_at = 0;
-		buf_size = t;
-	}
-
-#ifdef PARSE_NEWLINE_AS_EOF
-	if (buf[buf_at] == '\n') return buf_at++, -1;
-#endif
-	return buf[buf_at++];
+    if (input->ptr == input->length)
+        return -1;
+    return input->data[input->ptr];
 }
 
-static void unc(int c)
+static void unc(struct input_data* input)
 {
-	if (buf_at == 0)
-	{
-		memmove(buf+1, buf, buf_size);
-		buf_at++;
-		buf_size++;
-	}
-#ifdef PARSE_NEWLINE_AS_EOF
-	if (c == -1) c = '\n';
-#endif
-	buf[--buf_at] = c;
+    if (input->ptr == 0)
+        die("attempt to reverse character at idx 0");
+    input->ptr -= 1;
 }
 
 /* parsing and preprocessing, impl */
 
-static int nextcmd(stream_id input)
+static int nextcmd(struct input_data* input)
 {
 	while (1)
 	{
@@ -116,7 +85,7 @@ static int nextcmd(stream_id input)
 	}
 }
 
-static int readrepc(stream_id input)
+static int readrepc(struct input_data* input)
 {
 	int c = 0, neg = 0, ch;
 
@@ -124,7 +93,7 @@ static int readrepc(stream_id input)
 	if (ch != '*' && ch != '%')
 	{
 		/* treat garbage as ()*0 in case it's inside a comment */
-		unc(ch);
+		unc(input);
 		return 0;
 	}
 
@@ -151,12 +120,12 @@ static int readrepc(stream_id input)
 		ch = nextc(input);
 	}
 
-	unc(ch);
+	unc(input);
 
 	return neg ? -c : c;
 }
 
-struct oplist *readops(stream_id input)
+static struct oplist *readops(struct input_data* input)
 {
 	/* main code to read the list of ops */
 
@@ -197,7 +166,7 @@ struct oplist *readops(stream_id input)
 	return ops;
 }
 
-void matchrep(struct oplist *ops)
+static void matchrep(struct oplist *ops)
 {
 	/* match (..) pairs and inner {..} blocks */
 
@@ -273,7 +242,7 @@ void matchrep(struct oplist *ops)
 		fail("starting ( without a matching )");
 }
 
-void cleanrep(struct oplist *ops)
+static void cleanrep(struct oplist *ops)
 {
 	/* turn contentless loops into *0's.
 	   transform ({a}b)%N to ()*0a(b)*N.
@@ -365,7 +334,7 @@ void cleanrep(struct oplist *ops)
 	}
 }
 
-void matchloop(struct oplist *ops)
+static void matchloop(struct oplist *ops)
 {
 	/* match [..] pairs */
 
@@ -419,8 +388,16 @@ void matchloop(struct oplist *ops)
 		fail("starting [ without a matching ]");
 }
 
-struct oplist *parse(stream_id input)
+struct oplist *opl_parse(struct input_data* input)
 {
+    if (setjmp(fail_buf))
+    {
+        input->error_encountered = true;
+        input->err_msg = err_msg;
+        return 0;
+    }
+
+
 	struct oplist *ops = readops(input);
 
 	/* handle (...) constructions first */
@@ -433,16 +410,6 @@ struct oplist *parse(stream_id input)
 	matchloop(ops);
 
 	return ops;
-}
-
-void fail(const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	vsnprintf(fail_msg, sizeof fail_msg, fmt, ap);
-	va_end(ap);
-
-	longjmp(fail_buf, 1);
 }
 
 /* oplist handling, impl */

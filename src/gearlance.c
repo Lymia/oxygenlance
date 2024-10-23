@@ -51,7 +51,7 @@ static struct {
 
 /* actual interpretation, impl */
 
-union opcode *core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB)
+union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB)
 {
     unsigned char tape[MAXTAPE];
 

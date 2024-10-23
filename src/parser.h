@@ -64,6 +64,18 @@ struct oplist
 	struct op ops[];
 };
 
+struct input_data
+{
+    // input handling
+    const char* data;
+    size_t length;
+    size_t ptr;
+
+    // error handling
+    bool error_encountered;
+    const char* err_msg;
+};
+
 /* oplist handling */
 
 struct oplist *opl_new(void);
@@ -72,17 +84,6 @@ struct oplist *opl_append(struct oplist *o, enum optype type);
 
 /* parsing and preprocessing */
 
-void fail(const char *fmt, ...);
-
-extern char fail_msg[256];
-extern jmp_buf fail_buf;
-
-#ifdef PARSE_STDIN
-typedef uint32_t *stream_id;
-#else
-typedef int stream_id;
-#endif
-
-struct oplist *parse(stream_id input);
+struct oplist *opl_parse(struct input_data* input);
 
 #endif /* !CRANKLANCE_PARSER_H */
