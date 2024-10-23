@@ -30,45 +30,22 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "common.h"
+#include "rust_callbacks.h"
 
-void die(const char *fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	fputc('\n', stderr);
-
-	exit(1);
-}
-
-void *smalloc(size_t size)
+void *oxygenlance_smalloc(size_t size)
 {
 	void *ptr = malloc(size);
 	if (!ptr) die("out of memory");
 	return ptr;
 }
 
-void *srealloc(void *ptr, size_t size)
+void *oxygenlance_srealloc(void *ptr, size_t size)
 {
 	ptr = realloc(ptr, size);
 	if (!ptr) die("out of memory");
 	return ptr;
 }
 
-int sopen(const char *fname)
-{
-	int fd = open(fname, O_RDONLY);
-	if (fd == -1)
-		die("open failed: %s", fname);
-	return fd;
-}
-
-int screat(const char *fname)
-{
-	int fd = creat(fname, 0666);
-	if (fd == -1)
-		die("creat failed: %s", fname);
-	return fd;
+void oxygenlance_sfree(void* ptr) {
+    free(ptr);
 }

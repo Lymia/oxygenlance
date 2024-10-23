@@ -25,7 +25,7 @@
 #ifndef GEARLANCE_H
 #define GEARLANCE_H 1
 
-#include "common.h"
+#include "rust_callbacks.h"
 #include "parser.h"
 
 #define MINTAPE 10

@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "common.h"
+#include "rust_callbacks.h"
 #include "parser.h"
 
 char fail_msg[256];

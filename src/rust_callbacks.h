@@ -28,13 +28,14 @@
 
 /* generic helpers */
 
-void die(const char *fmt, ...);
+void oxygenlance_die(const char *str);
+void *oxygenlance_smalloc(size_t size);
+void *oxygenlance_srealloc(void *ptr, size_t size);
+void oxygenlance_sfree(void* ptr);
 
-void *smalloc(size_t size);
-void *srealloc(void *ptr, size_t size);
-void sfree(void* ptr);
-
-int sopen(const char *fname);
-int screat(const char *fname);
+#define die(...) oxygenlance_die(__VA_ARGS__)
+#define smalloc(...) oxygenlance_smalloc(__VA_ARGS__)
+#define srealloc(...) oxygenlance_srealloc(__VA_ARGS__)
+#define sfree(...) oxygenlance_sfree(__VA_ARGS__)
 
 #endif /* !CRANKLANCE_COMMON_H */

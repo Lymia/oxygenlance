@@ -1,4 +1,4 @@
-mod common;
+mod rust_callbacks;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right

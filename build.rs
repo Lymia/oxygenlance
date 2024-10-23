@@ -1,7 +1,7 @@
 fn main() {
     cc::Build::new()
-        .file("src/common.c")
         .file("src/gearlance.c")
         .file("src/parser.c")
+        .file("src/rust_callbacks.c")
         .compile("oxygenlance_gearlance");
 }
