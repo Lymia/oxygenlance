@@ -461,7 +461,7 @@ struct oplist *opl_new(void)
 
 void opl_free(struct oplist *o)
 {
-	free(o);
+	sfree(o);
 }
 
 struct oplist *opl_append(struct oplist *o, enum optype type)

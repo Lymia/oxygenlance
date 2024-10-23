@@ -32,6 +32,7 @@ void die(const char *fmt, ...);
 
 void *smalloc(size_t size);
 void *srealloc(void *ptr, size_t size);
+void sfree(void* ptr);
 
 int sopen(const char *fname);
 int screat(const char *fname);

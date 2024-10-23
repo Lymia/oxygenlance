@@ -49,98 +49,12 @@ static struct {
 } xstats = { {{0}}, {{0}} };
 #endif
 
-/* main application */
-
-#ifndef NO_MAIN
-int main(int argc, char *argv[])
-{
-	/* check args */
-
-	if (argc != 3)
-	{
-		fprintf(stderr, "usage: %s prog1.bfjoust prog2.bfjoust\n", argv[0]);
-		return 1;
-	}
-
-	/* parse competitors */
-
-	int fdA = sopen(argv[1]), fdB = sopen(argv[2]);
-
-	if (setjmp(fail_buf))
-	{
-		printf("parse error: %s\n", fail_msg);
-		return 1;
-	}
-
-	struct oplist *opsA = parse(fdA), *opsB = parse(fdB);
-
-	/* for debugging purposes, dump out the parse */
-
-#if 0
-	unsigned char opchars[] = {
-		[OP_INC] = '+', [OP_DEC] = '-', [OP_LEFT] = '<', [OP_RIGHT] = '>',
-		[OP_WAIT] = '.', [OP_LOOP1] = '[', [OP_LOOP2] = ']',
-		[OP_REP1] = '(', [OP_REP2] = ')',
-		[OP_IREP1] = '(', [OP_INNER1] = '{', [OP_INNER2] = '}', [OP_IREP2] = ')',
-		[OP_DONE] = '_',
-	};
-	for (int at = 0; at < opsA->len; at++)
-	{
-		struct op *op = &opsA->ops[at];
-		printf("%3d:  %c  ", at, opchars[op->type]);
-		if (op->match != -1) printf("m%-2d  ", op->match); else printf("     ");
-		if (op->inner != -1) printf("i%-2d  ", op->inner); else printf("     ");
-		if (op->count != -1) printf("*%d", op->count);
-		printf("\n");
-	}
-	return 0;
-#endif
-
-	/* compile and run them */
-
-	union opcode *codeA = core(core_compile_a, opsA, 0, 0);
-	union opcode *codeB = core(core_compile_b, opsB, 0, 0);
-
-	core(core_run, 0, codeA, codeB);
-
-	free(codeA);
-	free(codeB);
-
-	/* summarize results */
-
-	CRANK(printf("SUMMARY: "));
-
-	int score = 0;
-
-	for (int pol = 0; pol < 2; pol++)
-	{
-		for (int tlen = MINTAPE; tlen <= MAXTAPE; tlen++)
-		{
-			putchar(scores[pol][tlen] ? (scores[pol][tlen] > 0 ? '<' : '>') : 'X');
-			score += scores[pol][tlen];
-		}
-		putchar(' ');
-	}
-
-#ifdef CRANK_IT
-	printf("%d c%lld sl%d sr%d\n", score, stats.cycles, opsA->len, opsB->len);
-#else
-	printf("%d\n", score);
-#endif
-
-	opl_free(opsA);
-	opl_free(opsB);
-
-	return 0;
-}
-#endif /* !NO_MAIN */
-
 /* actual interpretation, impl */
-
-static unsigned char tape[MAXTAPE];
 
 union opcode *core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB)
 {
+    unsigned char tape[MAXTAPE];
+
 	static void * const xtableA[OP_MAX] = {
 		[OP_INC] = &&op_incA, [OP_DEC] = &&op_decA,
 		[OP_LEFT] = &&op_leftA, [OP_RIGHT] = &&op_rightA,
