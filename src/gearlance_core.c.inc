@@ -26,33 +26,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "gearlance.h"
+#include "gearlance_core.h"
 
 /* #define TRACE 1 */
 
 #ifdef CRANK_IT
 #define CRANK(x) x
+#define GEARLANCE_CORE_SYMBOL cranklance_core
 #else
 #define CRANK(x) /* no action */
-#endif
-
-int scores[2][MAXTAPE+1];
-
-#ifdef CRANK_IT
-static struct {
-	unsigned long long cycles;
-} stats = { 0 };
-
-static struct {
-	unsigned char tape_max[2][MAXTAPE];
-	unsigned heat_position[2][MAXTAPE];
-} xstats = { {{0}}, {{0}} };
+#define GEARLANCE_CORE_SYMBOL gearlance_core
 #endif
 
 /* actual interpretation, impl */
 
-union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB)
-{
+union opcode *GEARLANCE_CORE_SYMBOL(
+    enum core_action act,
+    struct gearlance_result *result,
+    struct oplist *ops,
+    union opcode *codeA,
+    union opcode *codeB,
+    union opcode *codeB2
+) {
     unsigned char tape[MAXTAPE];
 
 	static void * const xtableA[OP_MAX] = {
@@ -75,10 +70,20 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 		[OP_INNER2] = &&op_inner2B, [OP_IREP2] = &&op_irep2B,
 		[OP_DONE] = &&nextcycle, /* shortcut */
 	};
+	static void * const xtableB2[OP_MAX] = {
+		[OP_INC] = &&op_decB, [OP_DEC] = &&op_incB,
+		[OP_LEFT] = &&op_leftB, [OP_RIGHT] = &&op_rightB,
+		[OP_WAIT] = &&op_waitB,
+		[OP_LOOP1] = &&op_loop1B, [OP_LOOP2] = &&op_loop2B,
+		[OP_REP1] = &&op_rep1B, [OP_REP2] = &&op_rep2B,
+		[OP_IREP1] = &&op_rep1B, [OP_INNER1] = &&op_rep2B,
+		[OP_INNER2] = &&op_inner2B, [OP_IREP2] = &&op_irep2B,
+		[OP_DONE] = &&nextcycle, /* shortcut */
+	};
 
 	/* compilation to threaded code */
 
-	if (act == core_compile_a || act == core_compile_b)
+	if (act == core_compile_a || act == core_compile_b || act == core_compile_b2)
 	{
 		unsigned *offsets = smalloc(ops->len * sizeof *offsets);
 		unsigned len = 0;
@@ -103,7 +108,7 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 
 		union opcode *code = smalloc(len * sizeof *code);
 
-		void * const *xtable = (act == core_compile_a ? xtableA : xtableB);
+		void * const *xtable = (act == core_compile_a ? xtableA : act == core_compile_b ? xtableB : xtableB2);
 		union opcode *opc = code;
 
 		for (unsigned at = 0; at < ops->len; at++)
@@ -132,6 +137,8 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 			}
 		}
 
+		sfree(offsets);
+
 		return code;
 	}
 
@@ -149,24 +156,8 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 	/* execute with all tape lengths and both relative polarities */
 
 #ifdef CRANK_IT
-	stats.cycles = 0;
-
-#ifndef EXECUTE_STATS
-	/* use old text-based statistics output for plain 'cranklance' */
-#define EXECUTE_STATS(pol) \
-	stats.cycles += (MAXCYCLES - cycles); \
-	printf("CYCLES[%d,%d] = %d\n", pol, tapesize, MAXCYCLES - cycles); \
-	  \
-	printf("TAPEABS[%d,%d] =", pol, tapesize); \
-	for (int p = 0; p < tapesize; p++) printf(" %d", tape[p] >= 128 ? tape[p]-256 : tape[p]); \
-	printf("\n"); \
-	printf("TAPEMAX[%d,%d] =", pol, tapesize); \
-	for (int p = 0; p < tapesize; p++) printf(" %u/%u", xstats.tape_max[0][p], xstats.tape_max[1][p]); \
-	printf("\n"); \
-	printf("TAPEHEAT[%d,%d] =", pol, tapesize); \
-	for (int p = 0; p < tapesize; p++) printf(" %u/%u", xstats.heat_position[0][p], xstats.heat_position[1][p]); \
-	printf("\n")
-#endif
+	result->stats.cycles = 0;
+    #define EXECUTE_STATS(pol) result->stats.cycles += (MAXCYCLES - cycles);
 #endif
 
 #define EXECUTE_ALL(sym, pol) \
@@ -183,13 +174,13 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 		deathsA = 0, deathsB = 0; \
 	  \
 		cycles = MAXCYCLES; \
-		CRANK(memset(xstats.tape_max, 0, sizeof xstats.tape_max)); \
-		CRANK(memset(xstats.heat_position, 0, sizeof xstats.heat_position)); \
+		CRANK(memset(result->xstats.tape_max, 0, sizeof result->xstats.tape_max)); \
+		CRANK(memset(result->xstats.heat_position, 0, sizeof result->xstats.heat_position)); \
 	  \
 		score = 0; \
 		goto *ipA->xt; \
 	sym: \
-		scores[pol][tapesize] = score; \
+		result->scores[pol][tapesize] = score; \
 		CRANK(EXECUTE_STATS(pol)); \
 	}
 
@@ -198,12 +189,8 @@ union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union o
 
 	EXECUTE_ALL(done_normal, 0);
 
-	/* FIXME: try to make this loop not interpret all operands as xts */
-	for (union opcode *op = codeB; op->xt != xtableB[OP_DONE]; op++)
-	{
-		if (op->xt == xtableB[OP_INC]) op->xt = xtableB[OP_DEC];
-		else if (op->xt == xtableB[OP_DEC]) op->xt = xtableB[OP_INC];
-	}
+    // switch to the opposite polarity configuration
+    codeB = codeB2;
 
 	EXECUTE_ALL(done_flipped, 1);
 
@@ -247,8 +234,8 @@ nextcycle:
 	}
 
 #ifdef CRANK_IT
-	xstats.heat_position[0][ptrA-tape]++;
-	xstats.heat_position[1][ptrB-tape]++;
+	result->xstats.heat_position[0][ptrA-tape]++;
+	result->xstats.heat_position[1][ptrB-tape]++;
 #endif
 
 	if (!cycles)
@@ -284,7 +271,7 @@ op_decB:
 #ifdef CRANK_IT
 #define MAXSTAT(ptr,i) { \
 		unsigned char max = *ptr >= 128 ? 256 - *ptr : *ptr; \
-		if (max > xstats.tape_max[i][ptr-tape]) xstats.tape_max[i][ptr-tape] = max; }
+		if (max > result->xstats.tape_max[i][ptr-tape]) result->xstats.tape_max[i][ptr-tape] = max; }
 #endif
 
 op_leftA:
@@ -375,3 +362,5 @@ op_irep2B:
 op_doneA:
 	goto *ipB->xt;
 }
+
+/* core interface */

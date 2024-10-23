@@ -36,7 +36,8 @@ enum core_action
 {
 	core_compile_a,
 	core_compile_b,
-	core_run, /* note: this action flips polarity of program B */
+	core_compile_b2,
+	core_run,
 };
 
 union opcode
@@ -46,8 +47,35 @@ union opcode
 	int count;
 };
 
-union opcode *oxygenlance_core(enum core_action act, struct oplist *ops, union opcode *codeA, union opcode *codeB);
+struct gearlance_result {
+    int scores[2][MAXTAPE+1];
 
-extern int scores[2][MAXTAPE+1];
+    struct {
+    	unsigned long long cycles;
+    } stats;
+
+    struct {
+    	unsigned char tape_max[2][MAXTAPE];
+    	unsigned heat_position[2][MAXTAPE];
+    } xstats;
+};
+
+extern union opcode *gearlance_core(
+    enum core_action act,
+    struct gearlance_result *result,
+    struct oplist *ops,
+    union opcode *codeA,
+    union opcode *codeB,
+    union opcode *codeB2
+);
+
+extern union opcode *cranklance_core(
+    enum core_action act,
+    struct gearlance_result *result,
+    struct oplist *ops,
+    union opcode *codeA,
+    union opcode *codeB,
+    union opcode *codeB2
+);
 
 #endif // GEARLANCE_H
