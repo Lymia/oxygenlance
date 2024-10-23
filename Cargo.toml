@@ -3,5 +3,8 @@ name = "oxygenlance"
 version = "0.1.0"
 edition = "2021"
 
+[dependencies]
+thiserror = "1.0.65"
+
 [build-dependencies]
 cc = "1.1.31"
