@@ -390,6 +390,10 @@ static void matchloop(struct oplist *ops)
 
 struct oplist *opl_parse(struct input_data* input)
 {
+    input->ptr = 0;
+    input->error_encountered = false;
+    input->err_msg = NULL;
+
     if (setjmp(fail_buf))
     {
         input->error_encountered = true;

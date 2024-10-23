@@ -40,6 +40,7 @@
 
 /* actual interpretation, impl */
 
+__attribute__((noinline))
 union opcode *GEARLANCE_CORE_SYMBOL(
     enum core_action act,
     struct gearlance_result *result,
@@ -154,11 +155,7 @@ union opcode *GEARLANCE_CORE_SYMBOL(
 	int score = 0;
 
 	/* execute with all tape lengths and both relative polarities */
-
-#ifdef CRANK_IT
-	result->stats.cycles = 0;
-    #define EXECUTE_STATS(pol) result->stats.cycles += (MAXCYCLES - cycles);
-#endif
+	result->cycles = 0;
 
 #define EXECUTE_ALL(sym, pol) \
 	ret = &&sym; \
@@ -181,7 +178,7 @@ union opcode *GEARLANCE_CORE_SYMBOL(
 		goto *ipA->xt; \
 	sym: \
 		result->scores[pol][tapesize] = score; \
-		CRANK(EXECUTE_STATS(pol)); \
+		result->cycles += (MAXCYCLES - cycles); \
 	}
 
 	void *ret;

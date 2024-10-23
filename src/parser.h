@@ -28,8 +28,7 @@
 #include <stdint.h>
 #include <setjmp.h>
 
-#define MAXCYCLES 100000
-#define MAXNEST 4096
+#include "consts.h"
 
 #ifndef PARSER_EXTRAFIELDS
 #define PARSER_EXTRAFIELDS /* none */

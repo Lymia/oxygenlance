@@ -25,12 +25,9 @@
 #ifndef GEARLANCE_H
 #define GEARLANCE_H 1
 
+#include "consts.h"
 #include "rust_callbacks.h"
 #include "parser.h"
-
-#define MINTAPE 10
-#define MAXTAPE 30
-#define NTAPES (MAXTAPE - MINTAPE + 1)
 
 enum core_action
 {
@@ -49,10 +46,7 @@ union opcode
 
 struct gearlance_result {
     int scores[2][MAXTAPE+1];
-
-    struct {
-    	unsigned long long cycles;
-    } stats;
+    unsigned long long cycles;
 
     struct {
     	unsigned char tape_max[2][MAXTAPE];
