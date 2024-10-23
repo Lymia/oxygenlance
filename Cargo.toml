@@ -1,7 +1,16 @@
 [package]
 name = "oxygenlance"
 version = "0.1.0"
+authors = ["Rimi Kanokawa <rimi@rimin.moe>"]
 edition = "2021"
+
+description = "A simple crate to run BF Joust matches in Rust."
+
+documentation = "https://docs.rs/oxygenlance/"
+repository = "https://github.com/Lymia/oxygenlance"
+readme = "README.md"
+
+license = "MIT"
 
 [dependencies]
 thiserror = "1.0.65"
