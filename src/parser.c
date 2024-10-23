@@ -52,7 +52,7 @@ static int nextc(struct input_data* input)
 {
     if (input->ptr == input->length)
         return -1;
-    return input->data[input->ptr];
+    return input->data[input->ptr++];
 }
 
 static void unc(struct input_data* input)

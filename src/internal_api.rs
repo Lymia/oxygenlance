@@ -26,13 +26,16 @@ impl Debug for GearlanceCompiledProgram {
         write!(f, "[compiled program at 0x{:x}]", self.0 as usize)
     }
 }
+impl PartialEq for GearlanceCompiledProgram {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 as usize == other.0 as usize
+    }
+}
+impl Eq for GearlanceCompiledProgram {}
 
-pub fn compile_program(input: &str) -> Result<GearlanceCompiledProgram, Error> {
+pub fn compile_program(input: &[u8]) -> Result<GearlanceCompiledProgram, Error> {
     unsafe {
-        let input = gearlance_compile_input {
-            data: input.as_bytes().as_ptr() as *mut _,
-            length: input.len(),
-        };
+        let input = gearlance_compile_input { data: input.as_ptr() as *mut _, length: input.len() };
         let result = gearlance_compile(input);
         if result.error_encountered {
             Err(Error::ParseFailed(CStr::from_ptr(result.err_msg).to_str().unwrap()))

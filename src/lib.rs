@@ -36,14 +36,14 @@ mod api {
     }
 
     /// A compiled BF Joust warrior.
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Eq, PartialEq)]
     pub struct Warrior {
         compiled: Arc<GearlanceCompiledProgram>,
     }
     impl Warrior {
         /// Compile a BF Joust warrior from its source code.
-        pub fn compile(source: &str) -> Result<Warrior, Error> {
-            Ok(Warrior { compiled: Arc::new(internal_api::compile_program(source)?) })
+        pub fn compile(source: impl AsRef<[u8]>) -> Result<Warrior, Error> {
+            Ok(Warrior { compiled: Arc::new(internal_api::compile_program(source.as_ref())?) })
         }
 
         /// Runs a match between two warriors.
