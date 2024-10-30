@@ -38,6 +38,9 @@ struct gearlance_compile_result gearlance_compile(struct gearlance_compile_input
         program->codeB2Crank = cranklance_core(core_compile_b2, NULL, opl, NULL, NULL, NULL);
         result.program = program;
     }
+
+    opl_free(opl);
+
     return result;
 }
 
@@ -71,5 +74,11 @@ void gearlance_execute(struct gearlance_execute_input input, struct gearlance_ex
 }
 
 void gearlance_free_program(struct gearlance_compiled_program *program) {
+    sfree(program->codeA);
+    sfree(program->codeB);
+    sfree(program->codeB2);
+    sfree(program->codeACrank);
+    sfree(program->codeBCrank);
+    sfree(program->codeB2Crank);
     sfree(program);
 }
