@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 3 commits contributed to the release.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Add changelog descriptions. ([`fc348ef`](https://github.com/Lymia/oxygenlance/commit/fc348efdb8c36305b25ffb5d1d420a4b69616443))
+    - Adjusting changelogs prior to release of oxygenlance v1.0.3 ([`d9c9492`](https://github.com/Lymia/oxygenlance/commit/d9c94928d5cdc60efcee9e6ce402db47ae4d2842))
     - Update dependencies. ([`2aa7d78`](https://github.com/Lymia/oxygenlance/commit/2aa7d78093937e7c7b554445fa9c4a50febda82d))
 </details>
 
@@ -62,8 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
-
-* Fix issue where some loop constructs crashed the hill evaluator.
 
 <csr-read-only-do-not-edit/>
 
