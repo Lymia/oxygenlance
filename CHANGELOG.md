@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.0.3 (2026-01-30)
 
+* Update rust dependency versions.
+
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
@@ -26,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 </details>
 
 ## v1.0.2 (2024-10-30)
+
+* Fix memory leaks.
 
 ### Commit Statistics
 
@@ -59,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Commit Details
 
+* Fix issue where some loop constructs crashed the hill evaluator.
+
 <csr-read-only-do-not-edit/>
 
 <details><summary>view details</summary>
@@ -69,6 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 </details>
 
 ## v1.0.0 (2024-10-23)
+
+* Initial release.
 
 ### Commit Statistics
 
