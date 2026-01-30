@@ -5,15 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v1.0.3 (2026-01-30)
-
-* Update rust dependency versions.
+## v1.0.4 (2026-01-30)
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release.
+ - 1 commit contributed to the release.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -24,6 +22,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Implement metrics for finding out how matches ended. ([`4b5bae6`](https://github.com/Lymia/oxygenlance/commit/4b5bae6a82f4682b9a184fa0a99656d3a10be12c))
+</details>
+
+## v1.0.3 (2026-01-30)
+
+* Update rust dependency versions.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release.
+ - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release oxygenlance v1.0.3 ([`d0d7f65`](https://github.com/Lymia/oxygenlance/commit/d0d7f65d4241a63abfe9342211c317ca7469ef94))
     - Add changelog descriptions. ([`fc348ef`](https://github.com/Lymia/oxygenlance/commit/fc348efdb8c36305b25ffb5d1d420a4b69616443))
     - Adjusting changelogs prior to release of oxygenlance v1.0.3 ([`d9c9492`](https://github.com/Lymia/oxygenlance/commit/d9c94928d5cdc60efcee9e6ce402db47ae4d2842))
     - Update dependencies. ([`2aa7d78`](https://github.com/Lymia/oxygenlance/commit/2aa7d78093937e7c7b554445fa9c4a50febda82d))
