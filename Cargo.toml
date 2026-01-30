@@ -13,7 +13,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-thiserror = "1.0.65"
+thiserror = "2.0.18"
 rayon = "1.10.0"
 
 [build-dependencies]
