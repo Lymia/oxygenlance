@@ -24,8 +24,16 @@ struct gearlance_execute_input {
     bool track_stats;
 };
 
+enum gearlance_end_type {
+    gearlance_end_time,
+    gearlance_end_flag,
+    gearlance_end_tape,
+    gearlance_end_unknown, // should never happen
+};
+
 struct gearlance_execute_result {
     int scores[2][MAXTAPE+1];
+    enum gearlance_end_type end_type[2][MAXTAPE+1];
     unsigned long long cycles;
     unsigned char tape_max[2][MAXTAPE];
     unsigned heat_position[2][MAXTAPE];

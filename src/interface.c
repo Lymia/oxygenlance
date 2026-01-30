@@ -71,6 +71,15 @@ void gearlance_execute(struct gearlance_execute_input input, struct gearlance_ex
         memcpy(output->tape_max, results.xstats.tape_max, sizeof results.xstats.tape_max);
         memcpy(output->heat_position, results.xstats.heat_position, sizeof results.xstats.heat_position);
     }
+
+    for (int pol = 0; pol < 2; pol++) {
+        for (int tapesize = 0; tapesize < MAXTAPE+1; tapesize++) {
+            if (results.win_by_tape[pol][tapesize]) output->end_type[pol][tapesize] = gearlance_end_tape;
+            else if (results.win_by_flag[pol][tapesize]) output->end_type[pol][tapesize] = gearlance_end_flag;
+            else if (results.win_by_time[pol][tapesize]) output->end_type[pol][tapesize] = gearlance_end_time;
+            else output->end_type[pol][tapesize] = gearlance_end_unknown;
+        }
+    }
 }
 
 void gearlance_free_program(struct gearlance_compiled_program *program) {

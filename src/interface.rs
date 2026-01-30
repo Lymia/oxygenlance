@@ -85,10 +85,16 @@ const _: () = {
     ["Offset of field: gearlance_execute_input::track_stats"]
         [::std::mem::offset_of!(gearlance_execute_input, track_stats) - 16usize];
 };
+pub const gearlance_end_type_gearlance_end_time: gearlance_end_type = 0;
+pub const gearlance_end_type_gearlance_end_flag: gearlance_end_type = 1;
+pub const gearlance_end_type_gearlance_end_tape: gearlance_end_type = 2;
+pub const gearlance_end_type_gearlance_end_unknown: gearlance_end_type = 3;
+pub type gearlance_end_type = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct gearlance_execute_result {
     pub scores: [[::std::os::raw::c_int; 31usize]; 2usize],
+    pub end_type: [[gearlance_end_type; 31usize]; 2usize],
     pub cycles: ::std::os::raw::c_ulonglong,
     pub tape_max: [[::std::os::raw::c_uchar; 30usize]; 2usize],
     pub heat_position: [[::std::os::raw::c_uint; 30usize]; 2usize],
@@ -96,17 +102,19 @@ pub struct gearlance_execute_result {
 #[allow(clippy::unnecessary_operation, clippy::identity_op)]
 const _: () = {
     ["Size of gearlance_execute_result"]
-        [::std::mem::size_of::<gearlance_execute_result>() - 560usize];
+        [::std::mem::size_of::<gearlance_execute_result>() - 808usize];
     ["Alignment of gearlance_execute_result"]
         [::std::mem::align_of::<gearlance_execute_result>() - 8usize];
     ["Offset of field: gearlance_execute_result::scores"]
         [::std::mem::offset_of!(gearlance_execute_result, scores) - 0usize];
+    ["Offset of field: gearlance_execute_result::end_type"]
+        [::std::mem::offset_of!(gearlance_execute_result, end_type) - 248usize];
     ["Offset of field: gearlance_execute_result::cycles"]
-        [::std::mem::offset_of!(gearlance_execute_result, cycles) - 248usize];
+        [::std::mem::offset_of!(gearlance_execute_result, cycles) - 496usize];
     ["Offset of field: gearlance_execute_result::tape_max"]
-        [::std::mem::offset_of!(gearlance_execute_result, tape_max) - 256usize];
+        [::std::mem::offset_of!(gearlance_execute_result, tape_max) - 504usize];
     ["Offset of field: gearlance_execute_result::heat_position"]
-        [::std::mem::offset_of!(gearlance_execute_result, heat_position) - 316usize];
+        [::std::mem::offset_of!(gearlance_execute_result, heat_position) - 564usize];
 };
 extern "C" {
     pub fn gearlance_compile(input: gearlance_compile_input) -> gearlance_compile_result;

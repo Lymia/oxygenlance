@@ -46,6 +46,9 @@ union opcode
 
 struct gearlance_result {
     int scores[2][MAXTAPE+1];
+    int win_by_time[2][MAXTAPE+1];
+    int win_by_flag[2][MAXTAPE+1];
+    int win_by_tape[2][MAXTAPE+1];
     unsigned long long cycles;
 
     struct {

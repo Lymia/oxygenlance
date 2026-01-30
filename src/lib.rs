@@ -7,7 +7,7 @@
 //! [gearlance]: https://github.com/fis/chainlance
 
 #[allow(unused)]
-#[allow(non_camel_case_types)]
+#[allow(nonstandard_style)]
 #[rustfmt::skip]
 mod interface;
 mod internal_api;
@@ -98,6 +98,19 @@ mod api {
         }
     }
 
+    /// How a particular round of BFJoust ended.
+    #[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
+    pub enum RoundEndingType {
+        /// The match ended in a timeout.
+        Timeout,
+
+        /// One or both warriors fell off the tape.
+        FellOffTape,
+
+        /// One or both warriors had their flag zeroed.
+        FlagZeroed,
+    }
+
     /// The result of a match between two BF Joust warriors.
     #[derive(Copy, Clone, Debug, Hash)]
     #[non_exhaustive]
@@ -107,6 +120,12 @@ mod api {
         /// The first array is for the normal polarity configuration, and the second array is for
         /// the inverted polarity configuration.
         pub results: [[RoundResult; MATCH_COUNT]; 2],
+
+        /// How each match ended.
+        ///
+        /// The first array is for the normal polarity configuration, and the second array is for
+        /// the inverted polarity configuration.
+        pub end_type: [[RoundEndingType; MATCH_COUNT]; 2],
 
         /// The total number of cycles executed across all matches.
         pub total_cycles: u32,
@@ -138,6 +157,7 @@ mod api {
             }
             MatchResult {
                 results,
+                end_type: self.end_type,
                 total_cycles: self.total_cycles,
                 detailed_statistics: self.detailed_statistics,
             }

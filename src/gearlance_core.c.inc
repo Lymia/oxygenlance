@@ -158,9 +158,14 @@ union opcode *GEARLANCE_CORE_SYMBOL(
 	result->cycles = 0;
 
 #define EXECUTE_ALL(sym, pol) \
+    curpol = pol; \
 	ret = &&sym; \
 	for (tapesize = MINTAPE; tapesize <= MAXTAPE; tapesize++) \
 	{ \
+		result->win_by_time[pol][tapesize] = 0; \
+		result->win_by_flag[pol][tapesize] = 0; \
+		result->win_by_tape[pol][tapesize] = 0; \
+	  \
 		ipA = &codeA[0], ipB = &codeB[0]; \
 	  \
 		memset(tape, 0, tapesize); \
@@ -177,12 +182,14 @@ union opcode *GEARLANCE_CORE_SYMBOL(
 		score = 0; \
 		goto *ipA->xt; \
 	sym: \
+	    if (cycles == 0) result->win_by_time[pol][tapesize] = 1; \
 		result->scores[pol][tapesize] = score; \
 		result->cycles += (MAXCYCLES - cycles); \
 	}
 
 	void *ret;
 	int tapesize = 0;
+	int curpol = 0;
 
 	EXECUTE_ALL(done_normal, 0);
 
@@ -218,14 +225,19 @@ nextcycle:
 #endif
 
 	if (deathsA >= 2 && deathsB >= 2)
+	{
+		result->win_by_flag[curpol][tapesize] = 1;
 		goto *ret;
+    }
 	else if (deathsA >= 2)
 	{
+		result->win_by_flag[curpol][tapesize] = 1;
 		score--;
 		goto *ret;
 	}
 	else if (deathsB >= 2)
 	{
+		result->win_by_flag[curpol][tapesize] = 1;
 		score++;
 		goto *ret;
 	}
@@ -242,10 +254,12 @@ nextcycle:
 	goto *ipA->xt;
 
 fallA:
+    result->win_by_tape[curpol][tapesize] = 1;
 	deathsA = 2;
 	goto *ipB->xt;
 
 fallB:
+    result->win_by_tape[curpol][tapesize] = 1;
 	if (!tape[0]) deathsA++;
 	if (deathsA >= 2)
 		goto *ret;

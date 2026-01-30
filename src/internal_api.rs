@@ -1,10 +1,12 @@
 use crate::{
     interface::{
-        gearlance_compile, gearlance_compile_input, gearlance_compiled_program, gearlance_execute,
-        gearlance_execute_input, gearlance_execute_result, gearlance_free_program, MAXTAPE,
-        MINTAPE,
+        gearlance_compile, gearlance_compile_input, gearlance_compiled_program,
+        gearlance_end_type_gearlance_end_flag, gearlance_end_type_gearlance_end_tape,
+        gearlance_end_type_gearlance_end_time, gearlance_end_type_gearlance_end_unknown,
+        gearlance_execute, gearlance_execute_input, gearlance_execute_result,
+        gearlance_free_program, MAXTAPE, MINTAPE,
     },
-    Error, MatchDetailedStatistics, MatchResult, RoundResult,
+    Error, MatchDetailedStatistics, MatchResult, RoundEndingType, RoundResult,
 };
 use std::{
     ffi::CStr,
@@ -47,6 +49,7 @@ pub fn compile_program(input: &[u8]) -> Result<GearlanceCompiledProgram, Error> 
 
 pub const MATCH_COUNT: usize = (MAXTAPE - MINTAPE + 1) as usize;
 
+#[allow(non_upper_case_globals)]
 pub fn execute_match(
     program_a: &GearlanceCompiledProgram,
     program_b: &GearlanceCompiledProgram,
@@ -59,6 +62,7 @@ pub fn execute_match(
     };
     let mut result = gearlance_execute_result {
         scores: [[0; (MAXTAPE + 1) as usize]; 2],
+        end_type: [[gearlance_end_type_gearlance_end_unknown; (MAXTAPE + 1) as usize]; 2],
         cycles: 0,
         tape_max: [[0; MAXTAPE as usize]; 2],
         heat_position: [[0; MAXTAPE as usize]; 2],
@@ -70,6 +74,7 @@ pub fn execute_match(
     // transcribe scores
     let mut scores = MatchResult {
         results: [[RoundResult::Tie; MATCH_COUNT]; 2],
+        end_type: [[RoundEndingType::Timeout; MATCH_COUNT]; 2],
         total_cycles: result.cycles as u32,
         detailed_statistics: None,
     };
@@ -81,6 +86,14 @@ pub fn execute_match(
                     0 => RoundResult::Tie,
                     1 => RoundResult::LeftWins,
                     _ => unreachable!("Invalid score received?"),
+                };
+
+            scores.end_type[configuration][i] =
+                match result.end_type[configuration][MINTAPE as usize + i] {
+                    gearlance_end_type_gearlance_end_flag => RoundEndingType::FlagZeroed,
+                    gearlance_end_type_gearlance_end_time => RoundEndingType::Timeout,
+                    gearlance_end_type_gearlance_end_tape => RoundEndingType::FellOffTape,
+                    i => panic!("invalid end_type found!?: {i}"),
                 };
         }
     }
