@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.0.4 (2026-01-30)
 
+* Add support for checking how matches ended.
+
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
