@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 1 commit contributed to the release.
+ - 3 commits contributed to the release.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Add changelog entries. ([`3cd6aed`](https://github.com/Lymia/oxygenlance/commit/3cd6aedaa2d00ad126fa296fae9ab3559f9cdb8c))
+    - Adjusting changelogs prior to release of oxygenlance v1.0.5 ([`40afd2d`](https://github.com/Lymia/oxygenlance/commit/40afd2dde7f0f6656d21f580eef3c89e7270feee))
     - Fix detailed statistics. ([`2f035e1`](https://github.com/Lymia/oxygenlance/commit/2f035e102433c8015f643b2faa04fef5a2abf564))
 </details>
 
