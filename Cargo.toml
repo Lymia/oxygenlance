@@ -1,6 +1,6 @@
 [package]
 name = "oxygenlance"
-version = "1.0.4"
+version = "1.0.5"
 authors = ["Rimi Kanokawa <rimi@rimin.moe>"]
 edition = "2021"
 
