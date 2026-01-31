@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.0.5 (2026-01-31)
 
+* Fix detailed statistics mode.
+
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
