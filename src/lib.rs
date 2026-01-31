@@ -62,7 +62,7 @@ mod api {
         /// This warrior is set as the left warrior, and the passed warrior is set as the right
         /// warrior.
         pub fn run_match_detailed(&self, right: &Warrior) -> MatchResult {
-            internal_api::execute_match(&self.compiled, &right.compiled, false)
+            internal_api::execute_match(&self.compiled, &right.compiled, true)
         }
     }
 
